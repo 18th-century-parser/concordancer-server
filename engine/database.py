@@ -3,6 +3,7 @@ import re
 
 from pymongo import MongoClient
 from pymongo.database import Database as MongoDatabase
+from pymongo.errors import OperationFailure
 
 from misc.data_models import (
     PartOfSpeech, Number, Gender, NounCase, VerbTime, VerbType, AdjectiveForm, OtherFeatures, WordForm, LetterRange
@@ -62,7 +63,7 @@ class Database:
         return result
 
     def get_collections(self) -> list[str]:
-        return self._db.list_collection_names()
+        return sorted(self._db.list_collection_names())
 
     def new_collection(self, collection_name: str, data: dict[str, dict[str, ...]]) -> None:
         prepared_data = []
@@ -83,7 +84,7 @@ class Database:
                             "lemma": lemma.upper(),
                             "token_occurrences_count": token_occurrences_count,
                             "lemma_occurrences_count": lemma_occurrences,
-                            "sentence": token_data["seq"][i].strip(),
+                            "sentence": token_data["seq"][i].strip().replace("  ", " "),
                             "sentence_index": token_data["index"][i],
                             "tags": self.__prepare_tags(token_data["tags"][i])
                         }
@@ -92,6 +93,9 @@ class Database:
         self._db.get_collection(collection_name).insert_many(prepared_data)
 
     def search_by_token(self, token: str, collection_name: str) -> list[dict]:
+        if collection_name not in self.get_collections():
+            return []
+
         return list(
             self._db.get_collection(collection_name).find(
                 {"token": token.upper()} if token else {}, {'_id': 0}
@@ -99,6 +103,9 @@ class Database:
         )
 
     def search_by_lemma(self, lemma: str, collection_name: str) -> list[dict]:
+        if collection_name not in self.get_collections():
+            return []
+
         return list(
             self._db.get_collection(collection_name).find(
                 {"lemma": lemma.upper()} if lemma else {}, {'_id': 0}
@@ -106,6 +113,9 @@ class Database:
         )
 
     def search_by_word_form(self, word_form: WordForm, letter_range: LetterRange, collection_name: str) -> list[dict]:
+        if collection_name not in self.get_collections():
+            return []
+
         if letter_range.left == "ё" and letter_range.right == "ё":
             letter_range_regex = "ё"
         elif letter_range.left == "ё":
@@ -135,4 +145,7 @@ class Database:
         if word_form.noun_case:
             query.update({"tags.noun_case": word_form.noun_case.value})
 
-        return list(self._db.get_collection(collection_name).find(query, {'_id': False}).sort(("lemma", "token")))
+        try:
+            return list(self._db.get_collection(collection_name).find(query, {'_id': False}).sort(("lemma", "token")))
+        except OperationFailure:
+            return []
