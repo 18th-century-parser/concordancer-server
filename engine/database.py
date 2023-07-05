@@ -79,8 +79,8 @@ class Database:
                 for i in range(token_occurrences_count := len(token_data["index"])):
                     prepared_data.append(
                         {
-                            "token": token,
-                            "lemma": lemma,
+                            "token": token.upper(),
+                            "lemma": lemma.upper(),
                             "token_occurrences_count": token_occurrences_count,
                             "lemma_occurrences_count": lemma_occurrences,
                             "sentence": token_data["seq"][i],
