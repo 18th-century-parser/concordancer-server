@@ -3,6 +3,8 @@ from pathlib import Path
 from fastapi import FastAPI, UploadFile, Body
 from fastapi.middleware.cors import CORSMiddleware
 
+from bs4.dammit import UnicodeDammit
+
 from engine.database import Database
 from engine.concardancer import concardancer
 from misc.data_models import WordForm, LetterRange
@@ -57,7 +59,7 @@ def add_files(files: list[UploadFile], db_name: str = Body(embed=True)):
                     temp_file.write(file.file.read())
             else:
                 with open(temp_file_path := get_temp_file_path(suffix), "w", encoding="utf-8") as temp_file:
-                    temp_file.write(file.file.read().decode("cp1251", errors="replace"))
+                    temp_file.write(UnicodeDammit(file.file.read(), ["cp1251", "utf-8"]).unicode_markup)
 
             text_file.write(get_plain_text(temp_file_path))
 

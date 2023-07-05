@@ -83,7 +83,7 @@ class Database:
                             "lemma": lemma.upper(),
                             "token_occurrences_count": token_occurrences_count,
                             "lemma_occurrences_count": lemma_occurrences,
-                            "sentence": token_data["seq"][i],
+                            "sentence": token_data["seq"][i].strip(),
                             "sentence_index": token_data["index"][i],
                             "tags": self.__prepare_tags(token_data["tags"][i])
                         }
@@ -131,4 +131,4 @@ class Database:
         if word_form.noun_case:
             query.update({"tags.noun_case": word_form.noun_case.value})
 
-        return list(self._db.get_collection(collection_name).find(query, {'_id': False}).sort("token"))
+        return list(self._db.get_collection(collection_name).find(query, {'_id': False}).sort(("lemma", "token")))
