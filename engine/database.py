@@ -93,12 +93,16 @@ class Database:
 
     def search_by_token(self, token: str, collection_name: str) -> list[dict]:
         return list(
-            self._db.get_collection(collection_name).find({"token": token} if token else {}, {'_id': 0}).sort("token")
+            self._db.get_collection(collection_name).find(
+                {"token": token.upper()} if token else {}, {'_id': 0}
+            ).sort("token")
         )
 
     def search_by_lemma(self, lemma: str, collection_name: str) -> list[dict]:
         return list(
-            self._db.get_collection(collection_name).find({"lemma": lemma} if lemma else {}, {'_id': 0}).sort("token")
+            self._db.get_collection(collection_name).find(
+                {"lemma": lemma.upper()} if lemma else {}, {'_id': 0}
+            ).sort("token")
         )
 
     def search_by_word_form(self, word_form: WordForm, letter_range: LetterRange, collection_name: str) -> list[dict]:
