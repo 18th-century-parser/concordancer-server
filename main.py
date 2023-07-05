@@ -6,20 +6,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from bs4.dammit import UnicodeDammit
 
 from engine.database import Database
-from engine.concardancer import concardancer
+from engine.concordancer import concardancer
 from misc.data_models import WordForm, LetterRange
 from misc.util import get_temp_file_path, get_plain_text
 
 
 app = FastAPI()
 
-origins = ["*"]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+        "https://concordancer.cloudy27.repl.co",
+        "https://kruase.ml"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 

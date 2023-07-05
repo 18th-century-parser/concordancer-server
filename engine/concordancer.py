@@ -3,8 +3,6 @@ from pathlib import Path
 from pymystem3 import Mystem
 import pymorphy3 as mf
 
-from json import dump
-
 
 class Concardancer:
     def __init__(self, all_forms=False, en=False):
@@ -182,13 +180,3 @@ class Concardancer:
 
 
 concardancer = Concardancer()
-
-
-if __name__ == "__main__":
-    with open("out.json", "w") as out:
-        dump(
-            concardancer.get_forms(Path("/home/kruase/Документы/VSCode/docs/detstvo.txt")),
-            out,
-            indent=4,
-            ensure_ascii=False
-        )
