@@ -90,7 +90,8 @@ class Database:
                         }
                     )
 
-        self._db.get_collection(collection_name).insert_many(prepared_data)
+        if prepared_data:
+            self._db.get_collection(collection_name).insert_many(prepared_data)
 
     def search_by_token(self, token: str, collection_name: str) -> list[dict]:
         if collection_name not in self.get_collections():
@@ -137,6 +138,7 @@ class Database:
         query.update(
             {
                 "token": {"$regex": fr"^[{letter_range_regex}][а-яё]*$", "$options": "i"},
+                "lemma": {"$regex": fr"^[{letter_range_regex}][а-яё]*$", "$options": "i"},
                 "tags.other_features": {
                     "$all": list(map(lambda elem: elem.value, word_form.other_features))
                 } if word_form.other_features else None
