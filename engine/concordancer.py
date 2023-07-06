@@ -86,33 +86,24 @@ class Concardancer:
             info[form]['tags'] = tags
         return info
 
+    # noinspection PyTypeChecker
     def get_forms(self, filename: Path):
         txt = self.read_from_file(filename)
         all_forms = {}
         seqs = self.get_seqs(txt)
         seq_ind = 1
         for seq in seqs:
-            words = seq.split(' ')
             a = self.stem.analyze(seq)
             ind = 0
-            for word in words:
-                if len(word) == 0:
-                    continue
-                if not word[0].isalpha():
-                    word = word[1:]
-                if ind >= len(a):
-                    break
-                if len(word) > 0 and not word[-1].isalpha():
-                    word = word[:-1]
-                if len(a[ind]) == 0 or a[ind] is None or type(a[ind]) == str:
-                    continue
+            for full_analysis in a:
+                word = full_analysis["text"]
+
                 try:
-                    # noinspection PyTypeChecker
-                    lemma = a[ind]['analysis'][0]['lex']
-                    # noinspection PyTypeChecker
-                    analysis = a[ind]['analysis'][0]['gr']
-                except:
-                    break
+                    lemma = full_analysis['analysis'][0]['lex']
+                    analysis = full_analysis['analysis'][0]['gr']
+                except IndexError:
+                    continue
+
                 tags = []
                 tmp = ""
                 flag = False
