@@ -10,8 +10,6 @@ uvicorn = {extras = ["standard"], version = "*"}
 python-multipart = "*"
 pymongo = "*"
 textract = "*"
-torch = "*"
-spacy = "*"
 pymystem3 = "*"
 pymorphy3 = "*"
 charset-normalizer = "*"
